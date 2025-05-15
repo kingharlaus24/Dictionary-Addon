@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "Dictionary Lookup",
+  "version": "3.2",
+  "description": "Right-click or shortcut to look up English word definitions in-page, with optional offline dictionary import and history.",
+  "permissions": [
+    "contextMenus",
+    "storage"
+  ],
+  "icons": {
+    "48": "icons/dict-48.png",
+    "128": "icons/dict-128.png"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://*/*"],
+      "js": ["content_script.js"]
+    }
+  ],
+  "browser_action": {
+    "default_icon": "icons/dict-48.png",
+    "default_title": "Dictionary Lookup",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "browser_style": true
+  },
+  "commands": {
+    "lookup": {
+      "suggested_key": { "default": "Ctrl+Shift+Y" },
+      "description": "Lookup selected word in dictionary"
+    }
+  }
+}

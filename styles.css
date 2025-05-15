@@ -1,0 +1,5 @@
+body { font-family: sans-serif; margin: 10px; }
+#app { display: flex; flex-direction: column; }
+input { padding: 5px; margin-bottom: 5px; }
+button { padding: 5px 10px; }
+#definition { margin-top: 10px; }

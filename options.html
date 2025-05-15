@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>Dictionary Lookup Options</title></head>
+<body>
+  <h1>Options</h1>
+  <label><input type="checkbox" id="offlineToggle"> Use offline dictionary</label><br><br>
+  <label>Import JSON dictionary file:<br>
+    <input type="file" id="dictFile" accept="application/json">
+  </label>
+  <p>If you’re privacy-conscious, upload your own dictionary—no data ever leaves your machine.</p>
+  <h2>History</h2>
+  <ul id="historyList"></ul>
+  <button id="clearHistory">Clear History</button>
+  <script src="options.js"></script>
+</body>
+</html>
