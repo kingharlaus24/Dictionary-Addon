@@ -5,7 +5,8 @@
   "description": "Right-click or shortcut to look up English word definitions in-page, with optional offline dictionary import and history.",
   "permissions": [
     "contextMenus",
-    "storage"
+    "storage",
+    "https://api.dictionaryapi.dev/*"
   ],
   "icons": {
     "48": "icons/dict-48.png",
