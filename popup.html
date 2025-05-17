@@ -6,10 +6,22 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="app">
-    <input type="text" id="wordInput" placeholder="Enter a word" />
-    <button id="lookupBtn">Lookup</button>
-    <div id="definition"></div>
+  <div id="popup-container">
+    <div id="tabs">
+      <button id="tab-lookup" class="active">🔍 Lookup</button>
+      <button id="tab-history">🕘 History</button>
+    </div>
+    <div id="content-lookup" class="tab-content">
+      <div id="lookup-box">
+        <input type="text" id="popupInput" placeholder="Enter a word…">
+        <button id="popupLookupBtn">Lookup</button>
+      </div>
+      <div id="popupDefinition" class="definition-area"></div>
+    </div>
+    <div id="content-history" class="tab-content hidden">
+      <ul id="popupHistoryList" class="history-list"></ul>
+      <button id="popupClearHistory">Clear History</button>
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>

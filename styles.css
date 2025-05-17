@@ -1,5 +1,22 @@
-body { font-family: sans-serif; margin: 10px; }
-#app { display: flex; flex-direction: column; }
-input { padding: 5px; margin-bottom: 5px; }
-button { padding: 5px 10px; }
-#definition { margin-top: 10px; }
+/* Popup container */
+#popup-container { width: 320px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+
+/* Tabs */
+#tabs { display: flex; border-bottom: 1px solid #ccc; }
+#tabs button { flex: 1; padding: 8px; background: none; border: none; cursor: pointer; }
+#tabs button.active { border-bottom: 2px solid #007aff; font-weight: bold; }
+
+/* Hide inactive content */
+.tab-content.hidden { display: none; }
+
+/* Lookup UI */
+#lookup-box { display: flex; margin: 8px; }
+#popupInput  { flex: 1; padding: 4px; }
+#popupLookupBtn { margin-left: 4px; padding: 4px 8px; }
+.definition-area { padding: 8px; max-height: 240px; overflow-y: auto; }
+
+/* History UI */
+.history-list { list-style: none; padding: 8px; max-height: 240px; overflow-y: auto; }
+.history-list li { padding: 4px 0; cursor: pointer; }
+.history-list li:hover { background: #f0f0f0; }
+#popupClearHistory { margin: 8px; padding: 4px 8px; }
