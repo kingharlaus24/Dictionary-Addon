@@ -3,14 +3,27 @@ const clearHistory = document.getElementById('clearHistory');
 
 async function loadOptions() {
   const { history = [] } = await browser.storage.local.get({ history: [] });
-  historyList.innerHTML = history
-    .map(h => `<li>${new Date(h.ts).toLocaleString()}: <strong>${h.word}</strong> – ${h.definition}</li>`)
-    .join('');
+  // Clear existing items
+  historyList.textContent = '';
+  // Render history items
+  history.forEach(h => {
+    const li = document.createElement('li');
+    const timestamp = new Date(h.ts).toLocaleString();
+    // Text: "MM/DD/YYYY, hh:mm:ss: "
+    li.textContent = `${timestamp}: `;
+    // Word in bold
+    const strong = document.createElement('strong');
+    strong.textContent = h.word;
+    li.appendChild(strong);
+    // Definition after dash
+    li.appendChild(document.createTextNode(` – ${h.definition}`));
+    historyList.appendChild(li);
+  });
 }
 
 clearHistory.addEventListener('click', async () => {
   await browser.storage.local.set({ history: [] });
-  historyList.innerHTML = '';
+  historyList.textContent = '';
 });
 
 document.addEventListener('DOMContentLoaded', loadOptions);

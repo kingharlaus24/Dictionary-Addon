@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Dictionary Lookup",
-  "version": "4.0",
+  "version": "4.1",
   "description": "Right-click or shortcut to look up English word definitions in-page, with lookup history.",
   "permissions": [
     "contextMenus",

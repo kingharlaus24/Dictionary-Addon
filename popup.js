@@ -1,21 +1,13 @@
-// Tab elements
 const tabLookup        = document.getElementById('tab-lookup');
 const tabHistory       = document.getElementById('tab-history');
 const contentLookup    = document.getElementById('content-lookup');
 const contentHistory   = document.getElementById('content-history');
-
-// Lookup elements
 const popupInput       = document.getElementById('popupInput');
 const popupLookupBtn   = document.getElementById('popupLookupBtn');
 const popupDefinition  = document.getElementById('popupDefinition');
-
-// History elements
 const popupHistoryList = document.getElementById('popupHistoryList');
 const popupClearHistory= document.getElementById('popupClearHistory');
 
-// Switch tabs
-tabLookup.addEventListener('click',  () => showTab('lookup'));
-tabHistory.addEventListener('click', () => showTab('history'));
 function showTab(tab) {
   if (tab === 'lookup') {
     tabLookup.classList.add('active');
@@ -30,77 +22,118 @@ function showTab(tab) {
     loadHistory();
   }
 }
+tabLookup.addEventListener('click',  () => showTab('lookup'));
+tabHistory.addEventListener('click', () => showTab('history'));
 
-// Perform lookup
 popupLookupBtn.addEventListener('click', async () => {
   const word = popupInput.value.trim();
   if (!word) return;
   popupDefinition.textContent = 'Loading…';
   try {
-    const res  = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-    const data = await res.json();
-    const html = Array.isArray(data) && data[0].meanings
-      ? formatJson(data[0])
-      : `<div class="dict-header">${word}</div><div class="dict-def">No definition found.</div>`;
-    popupDefinition.innerHTML = html;
-    saveHistory(word, html);
+    const res = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+    const [entry] = await res.json();
+    renderEntry(entry, popupDefinition);
+    await saveHistory(word, entry);
   } catch {
-    popupDefinition.innerHTML = `<div class="dict-header">${word}</div><div class="dict-def">Error fetching definition.</div>`;
+    renderError(word, popupDefinition);
   }
 });
 
-// History functions
-async function saveHistory(word, definition) {
+function renderError(word, container) {
+  container.textContent = '';
+  const d = document.createElement('div');
+  d.className = 'dict-header';
+  d.textContent = word;
+  const e = document.createElement('div');
+  e.className = 'dict-def';
+  e.textContent = 'Error fetching definition.';
+  container.append(d, e);
+}
+
+function renderEntry(entry, container) {
+  container.textContent = '';
+  const header = document.createElement('div');
+  header.className = 'dict-header';
+  header.textContent = entry.word;
+  container.appendChild(header);
+
+  const phon = entry.phonetics?.find(p => p.text)?.text || '';
+  const phonText = phon.match(/^\/.*\/$/) ? phon : phon ? `/${phon}/` : '';
+  const pos = entry.meanings[0]?.partOfSpeech || '';
+  if (phonText || pos) {
+    const infoLine = document.createElement('div');
+    if (phonText) {
+      const sp = document.createElement('span');
+      sp.className = 'dict-phonetic';
+      sp.textContent = phonText;
+      infoLine.append(sp);
+    }
+    if (pos) {
+      const sp2 = document.createElement('span');
+      sp2.className = 'dict-pos-inline';
+      sp2.textContent = pos;
+      infoLine.append(sp2);
+    }
+    container.appendChild(infoLine);
+  }
+
+  entry.meanings.forEach(m => {
+    m.definitions.forEach((d,i) => {
+      const def = document.createElement('div');
+      def.className = 'dict-def';
+      const num = document.createElement('strong');
+      num.textContent = `${i+1}. `;
+      def.append(num);
+      def.append(document.createTextNode(d.definition));
+      container.appendChild(def);
+      if (d.example) {
+        const ex = document.createElement('div');
+        ex.className = 'dict-ex';
+        ex.textContent = d.example;
+        container.appendChild(ex);
+      }
+    });
+  });
+
+  const derivs = entry.derivatives || entry.derivativeOf || [];
+  if (derivs.length) {
+    const hdr = document.createElement('div');
+    hdr.className = 'dict-deriv-header';
+    hdr.textContent = 'Derivatives:';
+    container.appendChild(hdr);
+    derivs.forEach(w => {
+      const dv = document.createElement('div');
+      dv.className = 'dict-deriv';
+      dv.textContent = `- ${w}`;
+      container.appendChild(dv);
+    });
+  }
+}
+
+async function saveHistory(word, entry) {
   const { history = [] } = await browser.storage.local.get({ history: [] });
-  history.unshift({ word, definition, ts: Date.now() });
+  history.unshift({ word, entry, ts: Date.now() });
   await browser.storage.local.set({ history });
 }
 
 async function loadHistory() {
   const { history = [] } = await browser.storage.local.get({ history: [] });
-  popupHistoryList.innerHTML = history.map((h, i) =>
-    `<li data-index="${i}">${new Date(h.ts).toLocaleString()}: <strong>${h.word}</strong></li>`
-  ).join('');
-  popupHistoryList.querySelectorAll('li').forEach(li => {
-    li.addEventListener('click', async () => {
-      const idx = li.dataset.index;
-      const { history } = await browser.storage.local.get('history');
-      const entry = history[idx];
+  popupHistoryList.textContent = '';
+  history.forEach(h => {
+    const li = document.createElement('li');
+    li.textContent = `${new Date(h.ts).toLocaleString()}: ${h.word}`;
+    li.addEventListener('click', () => {
       showTab('lookup');
-      popupInput.value      = entry.word;
-      popupDefinition.innerHTML = entry.definition;
+      popupInput.value = h.word;
+      renderEntry(h.entry, popupDefinition);
     });
+    popupHistoryList.appendChild(li);
   });
 }
 
 popupClearHistory.addEventListener('click', async () => {
   await browser.storage.local.set({ history: [] });
-  popupHistoryList.innerHTML = '';
+  popupHistoryList.textContent = '';
 });
 
-// Utility: reuse formatJson from background
-function formatJson(entry) {
-  const parts = [];
-  const phon = entry.phonetics?.find(p => p.text)?.text || '';
-  const phonText = phon.match(/^\/.*\/$/) ? phon : `/${phon}/`;
-  const pos   = entry.meanings[0]?.partOfSpeech || '';
-  parts.push(
-    `<div class="dict-header">` +
-      `${entry.word}` +
-      `${phonText ? ` | <span class="dict-phonetic">${phonText}</span>` : ''}` +
-      `${pos ? ` | <span class="dict-pos-inline">${pos}</span>` : ''}` +
-    `</div>`
-  );
-  entry.meanings.forEach(m => {
-    m.definitions.forEach((d,i) => {
-      parts.push(`<div class="dict-def"><strong>${i+1}</strong> ${d.definition}</div>`);
-      if (d.example) parts.push(`<div class="dict-ex"><em>${d.example}</em></div>`);
-    });
-  });
-  if (entry.derivatives || entry.derivativeOf) {
-    parts.push(`<div class="dict-deriv-header">Derivatives:</div>`);
-    const derivs = entry.derivatives || entry.derivativeOf;
-    derivs.forEach(w => parts.push(`<div class="dict-deriv">- ${w}</div>`));
-  }
-  return parts.join('');
-}
+document.addEventListener('DOMContentLoaded', () => showTab('lookup'));
