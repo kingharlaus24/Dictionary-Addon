@@ -24,26 +24,18 @@ async function handleLookup(info, tab) {
   const word = (info.selectionText || '').trim();
   if (!word || !tab.id) return;
 
-  const { offline, userDict = {} } = await browser.storage.local.get({ offline: false, userDict: {} });
   let definition;
-
-  if (offline) {
-    const entry = userDict[word.toLowerCase()];
-    definition = entry && entry.definitions
-      ? formatOfflineEntry(entry)
-      : `<div class="dict-header">${word}</div><div class="dict-def">No entry in offline dictionary.</div>`;
-  } else {
-    try {
-      const res = await fetch(`${DICT_API_BASE}/${encodeURIComponent(word)}`);
-      const json = await res.json();
-      definition = Array.isArray(json) && json[0].meanings
-        ? formatJson(json[0])
-        : `<div class="dict-header">${word}</div><div class="dict-def">No definition found.</div>`;
-    } catch {
-      definition = `<div class="dict-header">${word}</div><div class="dict-def">Error fetching definition.</div>`;
-    }
+  try {
+    const res = await fetch(`${DICT_API_BASE}/${encodeURIComponent(word)}`);
+    const json = await res.json();
+    definition = Array.isArray(json) && json[0].meanings
+      ? formatJson(json[0])
+      : `<div class="dict-header">${word}</div><div class="dict-def">No definition found.</div>`;
+  } catch {
+    definition = `<div class="dict-header">${word}</div><div class="dict-def">Error fetching definition.</div>`;
   }
 
+  // Save history
   const { history = [] } = await browser.storage.local.get({ history: [] });
   history.unshift({ word, definition, ts: Date.now() });
   await browser.storage.local.set({ history });
@@ -60,37 +52,24 @@ function formatJson(entry) {
   parts.push(
     `<div class="dict-header">` +
       `${entry.word}` +
-      `${phonText ? ` | <span class=\"dict-phonetic\">${phonText}</span>` : ''}` +
-      `${pos ? ` | <span class=\"dict-pos-inline\">${pos}</span>` : ''}` +
+      `${phonText ? ` | <span class="dict-phonetic">${phonText}</span>` : ''}` +
+      `${pos ? ` | <span class="dict-pos-inline">${pos}</span>` : ''}` +
     `</div>`
   );
   // Numbered definitions
   entry.meanings.forEach(m => {
     m.definitions.forEach((d, i) => {
       parts.push(
-        `<div class=\"dict-def\"><strong>${i + 1}</strong> ${d.definition}</div>`
+        `<div class="dict-def"><strong>${i + 1}</strong> ${d.definition}</div>`
       );
-      if (d.example) {
-        parts.push(
-          `<div class=\"dict-ex\"><em>${d.example}</em></div>`
-        );
-      }
+      if (d.example) parts.push(`<div class="dict-ex"><em>${d.example}</em></div>`);
     });
   });
   // Derivatives
   if (entry.derivatives || entry.derivativeOf) {
-    parts.push(`<div class=\"dict-deriv-header\">Derivatives:</div>`);
+    parts.push(`<div class="dict-deriv-header">Derivatives:</div>`);
     const derivs = entry.derivatives || entry.derivativeOf;
-    derivs.forEach(w => parts.push(`<div class=\"dict-deriv\">- ${w}</div>`));
+    derivs.forEach(w => parts.push(`<div class="dict-deriv">- ${w}</div>`));
   }
-  return parts.join('');
-}
-
-function formatOfflineEntry(obj) {
-  const parts = [];
-  parts.push(`<div class="dict-header">${obj.word}</div>`);
-  obj.definitions.forEach((def, i) => {
-    parts.push(`<div class="dict-def"><strong>${i + 1}</strong> ${def}</div>`);
-  });
   return parts.join('');
 }

@@ -4,20 +4,16 @@ function initShadow() {
   if (!shadowHost) {
     shadowHost = document.createElement('div');
     Object.assign(shadowHost.style, {
-      position: 'fixed',
-      top: '0',
-      left: '0',
-      width: '100%',
-      height: '100%',
-      pointerEvents: 'none',
-      zIndex: '2147483647'
+      position: 'fixed', top: 0, left: 0,
+      width: '100%', height: '100%',
+      pointerEvents: 'none', zIndex: '2147483647'
     });
     document.body.appendChild(shadowHost);
 
     shadow = shadowHost.attachShadow({ mode: 'closed' });
     const style = document.createElement('style');
     style.textContent = `
-      #dict-tooltip { position: absolute; max-width: 300px; max-height: 200px; background: #fff; color: #000; padding: 10px 12px; border: 1px solid #aaa; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, sans-serif; pointer-events: auto; overflow-y: auto; }
+      #dict-tooltip { position: absolute; max-width: 300px; max-height: 200px; overflow-y: auto; background: #fff; color: #000; padding: 10px 12px; border: 1px solid #aaa; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); font-family: -apple-system, BlinkMacSystemFont, sans-serif; pointer-events: auto; }
       .dict-header { font-size: 16px; font-weight: bold; margin-bottom: 6px; }
       .dict-phonetic { font-size: 13px; color: #555; }
       .dict-pos-inline { font-style: italic; font-size: 13px; }
@@ -32,8 +28,7 @@ function initShadow() {
 
 function positionTooltip() {
   if (!tooltip) return;
-  const sel = window.getSelection();
-  if (!sel.rangeCount) return;
+  const sel = window.getSelection(); if (!sel.rangeCount) return;
   const rect = sel.getRangeAt(0).getBoundingClientRect();
   const tipRect = tooltip.getBoundingClientRect();
   let top = rect.top - tipRect.height - 8;
@@ -45,59 +40,31 @@ function positionTooltip() {
 }
 
 function removeTooltip() {
-  if (tooltip) {
-    tooltip.remove();
-    tooltip = null;
+  if (tooltip) { tooltip.remove(); tooltip = null; }
+  window.removeEventListener('scroll', onScroll, true);
+}
+
+function onScroll() {
+  positionTooltip();
+  const sel = window.getSelection(); if (!sel.rangeCount) { removeTooltip(); return; }
+  const rect = sel.getRangeAt(0).getBoundingClientRect();
+  if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+    removeTooltip();
   }
-  window.removeEventListener('scroll', positionTooltip, true);
 }
 
 browser.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'request-selection') {
-    browser.runtime.sendMessage({ type: 'send-selection', word: window.getSelection().toString() });
+    browser.runtime.sendMessage({ type: 'send-selection', word: window.getSelection().toString()});
   }
   if (msg.type === 'show-definition') {
-    initShadow();
-    if (tooltip) removeTooltip();
-
+    initShadow(); if (tooltip) removeTooltip();
     tooltip = document.createElement('div');
-    tooltip.id = 'dict-tooltip';
-    tooltip.innerHTML = msg.definition;
+    tooltip.id = 'dict-tooltip'; tooltip.innerHTML = msg.definition;
     shadow.appendChild(tooltip);
-
     positionTooltip();
     window.addEventListener('scroll', onScroll, true);
-
-function onScroll() {
-  // Reposition tooltip
-  positionTooltip();
-  // Check if selection is still visible
-  const sel = window.getSelection();
-  if (!sel.rangeCount) {
-    removeTooltip();
-    return;
-  }
-  const rect = sel.getRangeAt(0).getBoundingClientRect();
-  // If selection's bounding box is completely out of viewport, close
-  if (
-    rect.bottom < 0 ||
-    rect.top > window.innerHeight ||
-    rect.right < 0 ||
-    rect.left > window.innerWidth
-  ) {
-    removeTooltip();
-  }
-}
-
-    // Dismiss only when clicking outside the tooltip
-    // Prevent closing when interacting with tooltip (including scrollbar)
-    tooltip.addEventListener('mousedown', event => {
-      event.stopPropagation();
-    });
-
-    document.addEventListener('mousedown', (e) => {
-      // Click outside tooltip → remove
-      removeTooltip();
-    }, { once: true });
+    tooltip.addEventListener('mousedown', e => e.stopPropagation());
+    document.addEventListener('mousedown', removeTooltip, { once: true });
   }
 });

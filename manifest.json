@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Dictionary Lookup",
-  "version": "3.2",
-  "description": "Right-click or shortcut to look up English word definitions in-page, with optional offline dictionary import and history.",
+  "version": "4.0",
+  "description": "Right-click or shortcut to look up English word definitions in-page, with lookup history.",
   "permissions": [
     "contextMenus",
     "storage",
