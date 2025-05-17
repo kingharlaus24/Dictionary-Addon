@@ -3,6 +3,11 @@
   "name": "Dictionary Lookup",
   "version": "4.1",
   "description": "Right-click or shortcut to look up English word definitions in-page, with lookup history.",
+  "homepage_url": "https://github.com/your-username/dictionary-lookup",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/dictionary-lookup.git"
+    },
   "permissions": [
     "contextMenus",
     "storage",
