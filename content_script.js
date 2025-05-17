@@ -66,7 +66,28 @@ browser.runtime.onMessage.addListener((msg) => {
     shadow.appendChild(tooltip);
 
     positionTooltip();
-    window.addEventListener('scroll', positionTooltip, true);
+    window.addEventListener('scroll', onScroll, true);
+
+function onScroll() {
+  // Reposition tooltip
+  positionTooltip();
+  // Check if selection is still visible
+  const sel = window.getSelection();
+  if (!sel.rangeCount) {
+    removeTooltip();
+    return;
+  }
+  const rect = sel.getRangeAt(0).getBoundingClientRect();
+  // If selection's bounding box is completely out of viewport, close
+  if (
+    rect.bottom < 0 ||
+    rect.top > window.innerHeight ||
+    rect.right < 0 ||
+    rect.left > window.innerWidth
+  ) {
+    removeTooltip();
+  }
+}
 
     // Dismiss only when clicking outside the tooltip
     // Prevent closing when interacting with tooltip (including scrollbar)
