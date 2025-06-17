@@ -11,12 +11,24 @@ async function loadOptions() {
     const timestamp = new Date(h.ts).toLocaleString();
     // Text: "MM/DD/YYYY, hh:mm:ss: "
     li.textContent = `${timestamp}: `;
+
     // Word in bold
     const strong = document.createElement('strong');
     strong.textContent = h.word;
     li.appendChild(strong);
-    // Definition after dash
-    li.appendChild(document.createTextNode(` – ${h.definition}`));
+
+    // Best-effort definition lookup
+    let def = '';
+    if (h.entry) {
+      if (Array.isArray(h.entry.defs) && h.entry.defs.length) {
+        def = h.entry.defs[0].text;
+      } else {
+        const first = h.entry.meanings?.[0]?.definitions?.[0]?.definition;
+        if (first) def = first;
+      }
+    }
+    if (def) li.appendChild(document.createTextNode(` – ${def}`));
+
     historyList.appendChild(li);
   });
 }
