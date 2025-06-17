@@ -52,3 +52,8 @@ function formatJson(entry) {
   const derivs  = entry.derivatives || entry.derivativeOf || [];
   return { word: entry.word, phonetic: phonText, pos, defs, derivs };
 }
+
+// Export for testing in Node environments
+if (typeof module !== 'undefined') {
+  module.exports = { formatJson };
+}
