@@ -1,4 +1,4 @@
-# Dictionary Lookup (Firefox Addon)
+# Dictionary Lookup (Firefox Add-on)
 
 Dictionary Lookup is a minimalist dictionary extension for Firefox.  
 Click any word on a webpage to get its definition instantly via a tooltip.
