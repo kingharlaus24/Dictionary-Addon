@@ -136,25 +136,32 @@ function renderTooltip(entry) {
     tooltip.appendChild(infoLine);
   }
 
-  // Definitions
-  entry.defs.forEach((d, i) => {
-    const defDiv = document.createElement('div');
-    defDiv.className = 'dict-def';
-    const num = document.createElement('strong');
-    num.textContent = `${i+1}. `;
-    defDiv.appendChild(num);
-    defDiv.appendChild(document.createTextNode(d.text));
-    tooltip.appendChild(defDiv);
-    if (d.example) {
-      const ex = document.createElement('div');
-      ex.className = 'dict-ex';
-      ex.textContent = d.example;
-      tooltip.appendChild(ex);
-    }
-  });
+  // Definitions or error message
+  if (Array.isArray(entry.defs) && entry.defs.length) {
+    entry.defs.forEach((d, i) => {
+      const defDiv = document.createElement('div');
+      defDiv.className = 'dict-def';
+      const num = document.createElement('strong');
+      num.textContent = `${i+1}. `;
+      defDiv.appendChild(num);
+      defDiv.appendChild(document.createTextNode(d.text));
+      tooltip.appendChild(defDiv);
+      if (d.example) {
+        const ex = document.createElement('div');
+        ex.className = 'dict-ex';
+        ex.textContent = d.example;
+        tooltip.appendChild(ex);
+      }
+    });
+  } else {
+    const msg = document.createElement('div');
+    msg.className = 'dict-def';
+    msg.textContent = entry.error || 'No definition found.';
+    tooltip.appendChild(msg);
+  }
 
   // Derivatives
-  if (entry.derivs.length) {
+  if (Array.isArray(entry.derivs) && entry.derivs.length) {
     const dhdr = document.createElement('div');
     dhdr.className = 'dict-deriv-header';
     dhdr.textContent = 'Derivatives:';
