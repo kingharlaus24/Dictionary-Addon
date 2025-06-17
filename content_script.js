@@ -170,7 +170,8 @@ function renderTooltip(entry) {
   shadow.appendChild(tooltip);
 }
 
-// Position tooltip above the selected word
+// Position tooltip relative to selection; will appear above or below
+// depending on available space
 function positionTooltip() {
   if (!tooltip) return;
   const sel = window.getSelection();
