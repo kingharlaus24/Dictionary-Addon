@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Dictionary Lookup",
-  "version": "4.1",
+  "version": "4.2",
   "description": "Right-click or shortcut to look up English word definitions in-page, with lookup history.",
   "homepage_url": "https://github.com/kingharlaus24/dictionary-lookup",
   "repository": {
