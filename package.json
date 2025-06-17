@@ -1,0 +1,12 @@
+{
+  "name": "dictionary-addon",
+  "version": "1.0.0",
+  "description": "Testing setup for Dictionary Lookup",
+  "devDependencies": {
+    "jest": "^29.6.1"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "test": "jest"
+  }
+}
