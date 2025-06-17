@@ -1,3 +1,4 @@
+require('./browser-mock');
 const { formatJson } = require('../background');
 
 describe('formatJson', () => {
