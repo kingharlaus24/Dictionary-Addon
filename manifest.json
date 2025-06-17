@@ -11,7 +11,8 @@
   "permissions": [
     "contextMenus",
     "storage",
-    "https://api.dictionaryapi.dev/*"
+    "https://api.dictionaryapi.dev/*",
+    "https://en.wikipedia.org/*"
   ],
   "icons": {
     "48": "icons/dict-48.png",

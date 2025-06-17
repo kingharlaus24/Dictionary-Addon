@@ -1,3 +1,6 @@
+const DICT_API_BASE = 'https://api.dictionaryapi.dev/api/v2/entries/en';
+const WIKI_API_BASE = 'https://en.wikipedia.org/api/rest_v1/page/summary';
+
 // Tab elements
 const tabLookup        = document.getElementById('tab-lookup');
 const tabHistory       = document.getElementById('tab-history');
@@ -31,15 +34,49 @@ function showTab(tab) {
 tabLookup.addEventListener('click', () => showTab('lookup'));
 tabHistory.addEventListener('click', () => showTab('history'));
 
+async function fetchDictionary(word) {
+  try {
+    const res = await fetch(`${DICT_API_BASE}/${encodeURIComponent(word)}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (Array.isArray(json) && json[0].meanings) {
+      return json[0];
+    }
+  } catch {
+    // ignore errors
+  }
+  return null;
+}
+
+async function fetchWikipedia(word) {
+  try {
+    const res = await fetch(`${WIKI_API_BASE}/${encodeURIComponent(word)}`);
+    if (!res.ok) return null;
+    const json = await res.json();
+    if (json.extract) {
+      return {
+        word: json.title || word,
+        phonetics: [],
+        meanings: [{ partOfSpeech: '', definitions: [{ definition: json.extract }] }]
+      };
+    }
+  } catch {
+    // ignore errors
+  }
+  return null;
+}
+
 async function lookupWord(word, save=true) {
   if (!word) return;
   popupDefinition.textContent = 'Loading…';
-  try {
-    const res  = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-    const data = await res.json();
-    renderEntry(data[0], popupDefinition);
-    if (save) await saveHistory(word, data[0]);
-  } catch {
+  let entry = await fetchDictionary(word);
+  if (!entry) {
+    entry = await fetchWikipedia(word);
+  }
+  if (entry) {
+    renderEntry(entry, popupDefinition);
+    if (save) await saveHistory(word, entry);
+  } else {
     renderError(word, popupDefinition);
   }
 }
