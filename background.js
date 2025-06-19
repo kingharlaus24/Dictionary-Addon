@@ -20,6 +20,17 @@ browser.commands.onCommand.addListener(command => {
     .then(([tab]) => tab.id && browser.tabs.sendMessage(tab.id, { type: 'request-selection' }));
 });
 
+// Listen for requests to save favorites
+browser.runtime.onMessage.addListener(async msg => {
+  if (msg.type === 'save-favorite' && msg.entry) {
+    const { favorites = [] } = await browser.storage.local.get({ favorites: [] });
+    if (!favorites.some(f => f.word === msg.entry.word)) {
+      favorites.unshift({ word: msg.entry.word, entry: msg.entry, ts: Date.now() });
+      await browser.storage.local.set({ favorites });
+    }
+  }
+});
+
 async function fetchDictionary(word) {
   try {
     const res = await fetch(`${DICT_API_BASE}/${encodeURIComponent(word)}`);

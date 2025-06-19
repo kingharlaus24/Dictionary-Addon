@@ -94,6 +94,10 @@ function renderTooltip(entry) {
   tooltip = document.createElement('div');
   tooltip.id = 'dict-tooltip';
 
+  // Content container used for copying
+  const content = document.createElement('div');
+  content.className = 'tooltip-content';
+
   // Button row
   const btnBar = document.createElement('div');
   btnBar.className = 'tooltip-buttons';
@@ -102,21 +106,29 @@ function renderTooltip(entry) {
   copyBtn.textContent = '📋';
   copyBtn.title = 'Copy definition';
   copyBtn.addEventListener('click', () => {
-    navigator.clipboard.writeText(tooltip.innerText);
+    navigator.clipboard.writeText(content.innerText);
+  });
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'tooltip-button';
+  saveBtn.textContent = '⭐';
+  saveBtn.title = 'Save word';
+  saveBtn.addEventListener('click', () => {
+    browser.runtime.sendMessage({ type: 'save-favorite', entry });
   });
   const closeBtn = document.createElement('button');
   closeBtn.className = 'tooltip-button';
   closeBtn.textContent = '×';
   closeBtn.title = 'Close';
   closeBtn.addEventListener('click', removeTooltip);
-  btnBar.append(copyBtn, closeBtn);
+  btnBar.append(copyBtn, saveBtn, closeBtn);
   tooltip.appendChild(btnBar);
+  tooltip.appendChild(content);
 
   // Header
   const header = document.createElement('div');
   header.className = 'dict-header';
   header.textContent = entry.word;
-  tooltip.appendChild(header);
+  content.appendChild(header);
 
   // Phonetic & part-of-speech
   if (entry.phonetic || entry.pos) {
@@ -133,7 +145,7 @@ function renderTooltip(entry) {
       sp2.textContent = entry.pos;
       infoLine.appendChild(sp2);
     }
-    tooltip.appendChild(infoLine);
+    content.appendChild(infoLine);
   }
 
   // Definitions or error message
@@ -145,19 +157,19 @@ function renderTooltip(entry) {
       num.textContent = `${i+1}. `;
       defDiv.appendChild(num);
       defDiv.appendChild(document.createTextNode(d.text));
-      tooltip.appendChild(defDiv);
+      content.appendChild(defDiv);
       if (d.example) {
         const ex = document.createElement('div');
         ex.className = 'dict-ex';
         ex.textContent = d.example;
-        tooltip.appendChild(ex);
+        content.appendChild(ex);
       }
     });
   } else {
     const msg = document.createElement('div');
     msg.className = 'dict-def';
     msg.textContent = entry.error || 'No definition found.';
-    tooltip.appendChild(msg);
+    content.appendChild(msg);
   }
 
   // Derivatives
@@ -165,12 +177,12 @@ function renderTooltip(entry) {
     const dhdr = document.createElement('div');
     dhdr.className = 'dict-deriv-header';
     dhdr.textContent = 'Derivatives:';
-    tooltip.appendChild(dhdr);
+    content.appendChild(dhdr);
     entry.derivs.forEach(w => {
       const dv = document.createElement('div');
       dv.className = 'dict-deriv';
       dv.textContent = `- ${w}`;
-      tooltip.appendChild(dv);
+      content.appendChild(dv);
     });
   }
 
