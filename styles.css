@@ -11,3 +11,11 @@
 .history-list li { padding: 4px 0; cursor: pointer; }
 .history-list li:hover { background: #f0f0f0; }
 #popupClearHistory { margin: 8px; padding: 4px 8px; }
+#popupClearFavorites { margin: 8px; padding: 4px 8px; }
+.popup-save-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  margin-left: 4px;
+}

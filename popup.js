@@ -4,8 +4,10 @@ const WIKI_API_BASE = 'https://en.wikipedia.org/api/rest_v1/page/summary';
 // Tab elements
 const tabLookup        = document.getElementById('tab-lookup');
 const tabHistory       = document.getElementById('tab-history');
+const tabFavorites     = document.getElementById('tab-favorites');
 const contentLookup    = document.getElementById('content-lookup');
 const contentHistory   = document.getElementById('content-history');
+const contentFavorites = document.getElementById('content-favorites');
 
 // Lookup elements
 const popupInput       = document.getElementById('popupInput');
@@ -15,24 +17,26 @@ const popupDefinition  = document.getElementById('popupDefinition');
 // History elements
 const popupHistoryList = document.getElementById('popupHistoryList');
 const popupClearHistory= document.getElementById('popupClearHistory');
+const popupFavoritesList = document.getElementById('popupFavoritesList');
+const popupClearFavorites= document.getElementById('popupClearFavorites');
 
 // Switch tabs
 function showTab(tab) {
-  if (tab === 'lookup') {
-    tabLookup.classList.add('active');
-    tabHistory.classList.remove('active');
-    contentLookup.classList.remove('hidden');
-    contentHistory.classList.add('hidden');
-  } else {
-    tabHistory.classList.add('active');
-    tabLookup.classList.remove('active');
-    contentHistory.classList.remove('hidden');
-    contentLookup.classList.add('hidden');
+  tabLookup.classList.toggle('active', tab === 'lookup');
+  tabHistory.classList.toggle('active', tab === 'history');
+  tabFavorites.classList.toggle('active', tab === 'favorites');
+  contentLookup.classList.toggle('hidden', tab !== 'lookup');
+  contentHistory.classList.toggle('hidden', tab !== 'history');
+  contentFavorites.classList.toggle('hidden', tab !== 'favorites');
+  if (tab === 'history') {
     loadHistory();
+  } else if (tab === 'favorites') {
+    loadFavorites();
   }
 }
 tabLookup.addEventListener('click', () => showTab('lookup'));
 tabHistory.addEventListener('click', () => showTab('history'));
+tabFavorites.addEventListener('click', () => showTab('favorites'));
 
 async function fetchDictionary(word) {
   try {
@@ -105,6 +109,14 @@ function renderEntry(entry, container) {
   const header = document.createElement('div');
   header.className = 'dict-header';
   header.textContent = entry.word;
+  const saveBtn = document.createElement('button');
+  saveBtn.className = 'popup-save-btn';
+  saveBtn.textContent = '⭐';
+  saveBtn.title = 'Save word';
+  saveBtn.addEventListener('click', () => {
+    browser.runtime.sendMessage({ type: 'save-favorite', entry });
+  });
+  header.appendChild(saveBtn);
   container.appendChild(header);
   const phon = entry.phonetics?.find(p => p.text)?.text || '';
   const phonText = phon.match(/^\/.*\/$/) ? phon : phon ? `/${phon}/` : '';
@@ -169,6 +181,26 @@ async function loadHistory() {
 popupClearHistory.addEventListener('click', async () => {
   await browser.storage.local.set({ history: [] });
   popupHistoryList.textContent = '';
+});
+
+async function loadFavorites() {
+  const { favorites = [] } = await browser.storage.local.get({ favorites: [] });
+  popupFavoritesList.textContent = '';
+  favorites.forEach(f => {
+    const li = document.createElement('li');
+    li.textContent = `${new Date(f.ts).toLocaleString()}: ${f.word}`;
+    li.addEventListener('click', () => {
+      showTab('lookup');
+      popupInput.value = f.word;
+      lookupWord(f.word, false);
+    });
+    popupFavoritesList.appendChild(li);
+  });
+}
+
+popupClearFavorites.addEventListener('click', async () => {
+  await browser.storage.local.set({ favorites: [] });
+  popupFavoritesList.textContent = '';
 });
 
 document.addEventListener('DOMContentLoaded', () => showTab('lookup'));
