@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Dictionary Lookup Options</title></head>
+<head>
+  <meta charset="UTF-8">
+  <title>Dictionary Lookup Library</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 <body>
-  <h1>Lookup History</h1>
-  <ul id="historyList"></ul>
-  <button id="clearHistory">Clear History</button>
+  <main class="options-page">
+    <header class="options-header">
+      <div>
+        <h1>Dictionary Library</h1>
+        <p>Review recent lookups and saved words.</p>
+      </div>
+      <input id="librarySearch" type="search" placeholder="Search library" autocomplete="off">
+    </header>
+
+    <div class="library-tabs" role="tablist" aria-label="Library sections">
+      <button id="optionsTabHistory" class="active" type="button">History</button>
+      <button id="optionsTabFavorites" type="button">Saved</button>
+    </div>
+
+    <section id="optionsHistoryPanel">
+      <ul id="historyList" class="history-list library-list"></ul>
+      <button id="clearHistory" class="secondary-button" type="button">Clear History</button>
+    </section>
+
+    <section id="optionsFavoritesPanel" class="hidden">
+      <ul id="favoritesList" class="history-list library-list"></ul>
+      <button id="clearFavorites" class="secondary-button" type="button">Clear Saved</button>
+    </section>
+  </main>
   <script src="options.js"></script>
 </body>
 </html>

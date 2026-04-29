@@ -7,25 +7,25 @@
 </head>
 <body>
   <div id="popup-container">
-    <div id="tabs">
-      <button id="tab-lookup" class="active">🔍 Lookup</button>
-      <button id="tab-history">🕘 History</button>
-      <button id="tab-favorites">⭐ Favorites</button>
+    <div id="tabs" role="tablist" aria-label="Dictionary views">
+      <button id="tab-lookup" class="active" type="button">Lookup</button>
+      <button id="tab-history" type="button">History</button>
+      <button id="tab-favorites" type="button">Saved</button>
     </div>
     <div id="content-lookup" class="tab-content">
       <div id="lookup-box">
-        <input type="text" id="popupInput" placeholder="Enter a word…">
-        <button id="popupLookupBtn">Lookup</button>
+        <input type="text" id="popupInput" placeholder="Enter a word" autocomplete="off">
+        <button id="popupLookupBtn" type="button">Look Up</button>
       </div>
       <div id="popupDefinition" class="definition-area"></div>
     </div>
     <div id="content-history" class="tab-content hidden">
       <ul id="popupHistoryList" class="history-list"></ul>
-      <button id="popupClearHistory">Clear History</button>
+      <button id="popupClearHistory" class="secondary-button" type="button">Clear History</button>
     </div>
     <div id="content-favorites" class="tab-content hidden">
       <ul id="popupFavoritesList" class="history-list"></ul>
-      <button id="popupClearFavorites">Clear Favorites</button>
+      <button id="popupClearFavorites" class="secondary-button" type="button">Clear Saved</button>
     </div>
   </div>
   <script src="popup.js"></script>

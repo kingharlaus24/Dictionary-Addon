@@ -1,7 +1,8 @@
 global.browser = {
   runtime: {
     onInstalled: { addListener: jest.fn() },
-    onStartup: { addListener: jest.fn() }
+    onStartup: { addListener: jest.fn() },
+    onMessage: { addListener: jest.fn() }
   },
   contextMenus: {
     removeAll: jest.fn(),
@@ -21,4 +22,4 @@ global.browser = {
       set: jest.fn()
     }
   }
-}; 
+};
