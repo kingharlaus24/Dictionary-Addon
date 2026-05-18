@@ -30,96 +30,109 @@ function initShadow() {
     style.textContent = `
       #dict-tooltip {
         position: absolute;
-        width: min(380px, calc(100vw - 24px));
-        max-height: 260px;
+        width: min(360px, calc(100vw - 24px));
+        max-height: 280px;
         overflow-y: auto;
-        background: #fbfaf6;
-        color: #1f1f1f;
+        background: rgba(245, 245, 247, 0.88);
+        -webkit-backdrop-filter: blur(28px) saturate(180%);
+        backdrop-filter: blur(28px) saturate(180%);
+        color: #1d1d1f;
         padding: 14px 16px 16px;
-        border: 1px solid rgba(0,0,0,0.18);
-        border-radius: 12px;
-        box-shadow: 0 16px 44px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.12);
-        font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-        line-height: 1.38;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: 14px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.1), 0 0 0 0.5px rgba(0,0,0,0.06);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+        font-size: 13px;
+        line-height: 1.45;
+        -webkit-font-smoothing: antialiased;
         pointer-events: auto;
       }
-      .tooltip-content { padding-right: 74px; }
+      .tooltip-content { padding-right: 80px; }
       .dict-header {
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: 24px;
-        font-weight: 600;
-        line-height: 1.1;
-        margin-bottom: 3px;
+        font-family: "New York", Georgia, "Times New Roman", serif;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.4px;
+        margin-bottom: 4px;
       }
-      .dict-phonetic { font-size: 12px; color: #6d675e; margin-right: 8px; }
-      .dict-pos-inline { color: #8a3d25; font-size: 12px; font-style: italic; }
+      .dict-phonetic { font-size: 12px; color: #6e6e73; margin-right: 6px; }
+      .dict-pos-inline { color: #0071e3; font-size: 12px; font-style: italic; }
       .dict-source {
-        border: 1px solid rgba(138,61,37,0.22);
+        border: 1px solid rgba(0, 0, 0, 0.12);
         border-radius: 999px;
-        color: #8a3d25;
+        color: #6e6e73;
         display: inline-block;
-        font-size: 11px;
+        font-size: 10.5px;
         margin-top: 8px;
         padding: 2px 7px;
       }
       .dict-def {
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: 14px;
-        margin: 8px 0 0;
+        font-size: 13.5px;
+        line-height: 1.5;
+        margin: 7px 0 0;
+        color: #1d1d1f;
       }
-      .dict-def strong { color: #7d6a4f; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif; }
+      .dict-def strong {
+        color: #6e6e73;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+      }
       .dict-ex {
-        border-left: 2px solid #d7cbb8;
-        color: #6a6258;
-        font-family: Georgia, "Times New Roman", serif;
-        font-size: 13px;
+        border-left: 2px solid rgba(0,0,0,0.14);
+        color: #6e6e73;
+        font-size: 12.5px;
         font-style: italic;
         margin: 5px 0 0 14px;
         padding-left: 8px;
       }
-      .dict-deriv-header { color: #6d675e; font-size: 12px; font-weight: 600; margin-top: 12px; }
-      .dict-deriv { color: #3d3a35; font-size: 12px; margin-top: 2px; }
+      .dict-deriv-header { color: #6e6e73; font-size: 11.5px; font-weight: 600; margin-top: 12px; letter-spacing: 0.02em; text-transform: uppercase; }
+      .dict-deriv { color: #1d1d1f; font-size: 12px; margin-top: 3px; }
 
       .tooltip-buttons {
         position: absolute;
-        top: 8px;
+        top: 10px;
         right: 10px;
         display: flex;
         gap: 4px;
       }
       .tooltip-button {
         align-items: center;
-        background: rgba(255,255,255,0.65);
-        border: 1px solid rgba(0,0,0,0.12);
+        background: rgba(0, 0, 0, 0.06);
+        border: 0;
         border-radius: 999px;
-        color: #504a42;
+        color: #3a3a3c;
         cursor: pointer;
         display: inline-flex;
-        font-size: 11px;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+        font-size: 11.5px;
+        font-weight: 500;
         height: 24px;
         justify-content: center;
         min-width: 24px;
-        padding: 0 7px;
+        padding: 0 8px;
+        transition: background 0.1s;
       }
-      .tooltip-button:hover {
-        background: #fff;
-        color: #151515;
-      }
+      .tooltip-button:hover { background: rgba(0,0,0,0.12); color: #000; }
 
       @media (prefers-color-scheme: dark) {
         #dict-tooltip {
-          background: #262522;
-          color: #f1eee8;
-          border-color: rgba(255,255,255,0.14);
-          box-shadow: 0 16px 44px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.32);
+          background: rgba(44, 44, 46, 0.88);
+          color: #f5f5f7;
+          border-color: rgba(255,255,255,0.1);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35), 0 0 0 0.5px rgba(255,255,255,0.06);
         }
-        .dict-phonetic, .dict-ex, .dict-deriv-header { color: #c8bdad; }
-        .dict-pos-inline, .dict-source { color: #dfa67d; }
-        .dict-source { border-color: rgba(223,166,125,0.28); }
-        .dict-def strong { color: #cdbb9d; }
-        .dict-deriv { color: #e5ded2; }
-        .tooltip-button { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.14); color: #eee6dc; }
-        .tooltip-button:hover { background: rgba(255,255,255,0.14); color: #fff; }
+        .dict-phonetic { color: #98989d; }
+        .dict-pos-inline { color: #2997ff; }
+        .dict-source { border-color: rgba(255,255,255,0.14); color: #98989d; }
+        .dict-def { color: #f5f5f7; }
+        .dict-def strong { color: #98989d; }
+        .dict-ex { color: #98989d; border-color: rgba(255,255,255,0.14); }
+        .dict-deriv-header { color: #98989d; }
+        .dict-deriv { color: #f5f5f7; }
+        .tooltip-button { background: rgba(255,255,255,0.1); color: #e5e5e7; }
+        .tooltip-button:hover { background: rgba(255,255,255,0.18); color: #fff; }
       }
     `;
     shadow.appendChild(style);
